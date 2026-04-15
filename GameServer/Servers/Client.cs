@@ -6,19 +6,28 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using Google.Protobuf;
+using GameServer.DAO;
+using SocketGameProtocol;
 namespace GameServer.Servers
 {
    
-    internal class Client
+     class Client
     {
         //客户端自己的socket
-       private Socket socket;
+        private Socket socket;
         //每个clientt都需要一个缓冲区来接收数据(Message是封装后的缓冲区)
-       private Message message;
-
-        public Client(Socket socket) {
-            this.socket = socket;
+        private Message message;
+        private  UserData userData;
+        private Server server;
+        public UserData GetUserData
+        {
+            get { return userData; }
+        }
+        public Client(Socket socket,Server server) {
+            this.userData = new UserData();
             message = new Message();
+            this.server = server;
+            this.socket = socket;
             StartReceive();
         }
 
@@ -35,6 +44,7 @@ namespace GameServer.Servers
         }
 
         void ReceiveCallBack(IAsyncResult iar) {
+            //客户端给服务器发消息，服务器的接受函数
             try
             {
                 if (socket == null || socket.Connected) 
@@ -48,7 +58,8 @@ namespace GameServer.Servers
                     //len为0说明客户端断开了连接
                     return;
                 }
-                message.ReadBuffer(len);
+                //读取解析数据包
+                message.ReadBuffer(len, HandleRequest);
                 StartReceive();
             }
             catch { 
@@ -56,6 +67,14 @@ namespace GameServer.Servers
             }
 
         }
+        //给客户端发包的函数
+        public void Send(MainPack pack)
+        {
+            socket.Send(Message.PackData(pack));
+        }
 
+        void HandleRequest(MainPack pack) {
+            this.server.ControllerManager.HandleRequest(pack,this);
+        }
     }
 }
