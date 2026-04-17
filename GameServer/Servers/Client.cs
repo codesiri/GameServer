@@ -33,6 +33,7 @@ namespace GameServer.Servers
 
         //服务器端接收数据的函数
         void StartReceive() {
+            Console.WriteLine("继续接受消息");
             socket
                 .BeginReceive(
                 message.Buffer,
@@ -45,14 +46,16 @@ namespace GameServer.Servers
 
         void ReceiveCallBack(IAsyncResult iar) {
             //客户端给服务器发消息，服务器的接受函数
+            Console.WriteLine("收到消息");
             try
             {
-                if (socket == null || socket.Connected) 
+                if (socket == null || !socket.Connected) 
                 {
                     return;
                 }
                 //服务器收到了多少数据
                 int len = socket.EndReceive(iar);
+                Console.WriteLine(len);
                 if (len == 0)
                 {
                     //len为0说明客户端断开了连接
@@ -60,6 +63,7 @@ namespace GameServer.Servers
                 }
                 //读取解析数据包
                 message.ReadBuffer(len, HandleRequest);
+                Console.WriteLine("============================================");
                 StartReceive();
             }
             catch { 
@@ -75,6 +79,12 @@ namespace GameServer.Servers
 
         void HandleRequest(MainPack pack) {
             this.server.ControllerManager.HandleRequest(pack,this);
+        }
+
+        public bool Logon( MainPack pack)
+        {
+            return true;
+            //return this.GetUserData.Logon(pack);
         }
     }
 }

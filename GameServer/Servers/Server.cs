@@ -37,10 +37,7 @@ namespace GameServer.Servers
             StartAccept();
         }
 
-        public bool Logon(Client client, MainPack pack)
-        {
-            return client.GetUserData.Logon(pack);
-        }
+
 
         public void HandleRequest(MainPack pack,Client client) 
         {

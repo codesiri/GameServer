@@ -20,7 +20,9 @@ namespace GameServer.Controller
         /// <returns></returns>
         public MainPack Logon(Server server, Client client, MainPack pack) {
             //处理登录逻辑，委托给了server.Logon函数
-            if (server.Logon(client, pack))
+            Console.WriteLine("UserController处理.......");
+            Console.WriteLine($"解析到的数据包信息：{pack.LoginPack.Username} ${pack.LoginPack.Password}");
+            if (client.Logon(pack))
             {
                 pack.ReturnCode = ReturnCode.Success;
             }
@@ -35,8 +37,8 @@ namespace GameServer.Controller
         /// </summary>
         /// <returns></returns>
         public MainPack LogIn(Server server, Client client, MainPack pack) {
-        
-        
+            Console.WriteLine("用户登录请求");
+            return pack;
         }
     }
 }

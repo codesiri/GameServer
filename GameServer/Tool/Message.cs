@@ -31,6 +31,7 @@ namespace GameServer.Tool
 
         public void ReadBuffer(int len, Action<MainPack> handleRquest)
         {
+            Console.WriteLine("解析协议");
             startindex += len;
             //因为包头是4字节的长度信息，所以如果startindex小于4，说明包头还没有接收完整，不能进行下一步的处理
             if (startindex <= PACK_HEAD_LEN)
@@ -41,6 +42,7 @@ namespace GameServer.Tool
             int count = BitConverter.ToInt32(buffer, 0);
             while (true)
             {
+                Console.WriteLine("解析消息循环");
                 //循环解析消息
                 //如果startindex大于等于包头长度加上包体长度，说明这个包已经接收完整了，可以进行下一步的处理了
                 if (startindex >= (count + PACK_HEAD_LEN))
