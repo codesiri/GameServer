@@ -1,15 +1,10 @@
 ﻿using Google.Protobuf;
 using SocketGameProtocol;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameServer.Tool
 {
 
-    
+
     //message的对象代表的是一个完整的数据包
     class Message
     {
@@ -17,14 +12,16 @@ namespace GameServer.Tool
         private byte[] buffer = new byte[1024];
         private int startindex;
         public byte[] Buffer { get { return buffer; } }
-        
-        public int StartIndex { 
+
+        public int StartIndex
+        {
             get { return startindex; }
         }
 
         public int Remsize
         {
-            get {
+            get
+            {
                 return buffer.Length - startindex;
             }
         }
@@ -33,16 +30,16 @@ namespace GameServer.Tool
         {
             Console.WriteLine("解析协议");
             startindex += len;
-            //因为包头是4字节的长度信息，所以如果startindex小于4，说明包头还没有接收完整，不能进行下一步的处理
-            if (startindex <= PACK_HEAD_LEN)
-            {
-                return;
-            }
-            //从buffer0开始往后读取四个字节
-            int count = BitConverter.ToInt32(buffer, 0);
             while (true)
             {
                 Console.WriteLine("解析消息循环");
+                //因为包头是4字节的长度信息，所以如果startindex小于4，说明包头还没有接收完整，不能进行下一步的处理
+                if (startindex <= PACK_HEAD_LEN)
+                {
+                    return;
+                }
+                //从buffer0开始往后读取四个字节
+                int count = BitConverter.ToInt32(buffer, 0);
                 //循环解析消息
                 //如果startindex大于等于包头长度加上包体长度，说明这个包已经接收完整了，可以进行下一步的处理了
                 if (startindex >= (count + PACK_HEAD_LEN))
@@ -62,7 +59,8 @@ namespace GameServer.Tool
                 }
             }
         }
-        public static byte[] PackData(MainPack pack) {
+        public static byte[] PackData(MainPack pack)
+        {
             byte[] data = pack.ToByteArray();
             byte[] head = BitConverter.GetBytes(data.Length);//包头
             //组装包头，包体
